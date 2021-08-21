@@ -1,0 +1,40 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using BilgeKitap.Business.Dependency_Resolvers.Autofac;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BilgeKitap.WebAPI
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+
+                //Autofac yapýsý için eklendi
+                //(.Net core yerine baþka bir IoC containerý kullanmak istersek yapacaðýmýz iþlem(Autofac özel)
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .ConfigureContainer<ContainerBuilder>(builder =>
+                {
+                    builder.RegisterModule(new AutofacBusinessModule());
+                })
+                //Autofac yapýsý için eklendi
+
+
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
+}
